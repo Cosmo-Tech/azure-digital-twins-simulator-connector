@@ -30,7 +30,7 @@ val modelDefaultProperties = mutableMapOf("id" to "string")
 /**
  * Default header cell name for relations
  */
-val relationshipDefaultHeader = mutableMapOf("source" to "string","target" to "string","name" to "string")
+val relationshipDefaultHeader = mutableMapOf("id" to "string", "source" to "string","target" to "string","name" to "string")
 
 // ############################
 // ## DTDL

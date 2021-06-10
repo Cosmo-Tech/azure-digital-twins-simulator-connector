@@ -71,6 +71,7 @@ class AzureDigitalTwinsUtil {
         @JvmStatic
         fun constructRelationshipRowValue(relation: BasicRelationship): ArrayList<String> {
             val rowValues = ArrayList<String>()
+            rowValues.add(relation.id)
             rowValues.add(relation.sourceId)
             rowValues.add(relation.targetId)
             rowValues.add(relation.name)
