@@ -19,7 +19,7 @@
     <simulator-connector-commons.version>0.2.1</simulator-connector-commons.version>
     <smallrye-config.version>1.5.0</smallrye-config.version>
     <!-- Azure  -->
-    <azure-digitaltwins-core.version>1.1.0</azure-digitaltwins-core.version>
+    <azure-digitaltwins-core.version>1.1.1</azure-digitaltwins-core.version>
     <azure-identity.version>1.3.0</azure-identity.version>
   </properties>
 
