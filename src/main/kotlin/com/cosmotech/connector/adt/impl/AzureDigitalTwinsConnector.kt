@@ -5,6 +5,7 @@ package com.cosmotech.connector.adt.impl
 
 import com.azure.digitaltwins.core.*
 import com.azure.identity.ClientSecretCredentialBuilder
+import com.azure.identity.DefaultAzureCredentialBuilder
 import com.beust.klaxon.Klaxon
 import com.cosmotech.connector.adt.constants.modelDefaultProperties
 import com.cosmotech.connector.adt.pojos.DTDLModelInformation
