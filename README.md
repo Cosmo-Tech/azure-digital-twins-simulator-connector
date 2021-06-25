@@ -133,4 +133,5 @@ You can find all export files under the directory "local_export_dir_path" specif
 - [ ] Create a Dockerfile instead of using JIB (and manage applicationinsights-agent download in it)
 - [ ] Add more logs (maybe with some metrics: e.g. amount of twins/relationships)
 - [x] Handle properties on relationship
-- [ ] Handle multiple extends 
+- [x] Handle multiple extends for properties
+- [ ] Handle multiple extends

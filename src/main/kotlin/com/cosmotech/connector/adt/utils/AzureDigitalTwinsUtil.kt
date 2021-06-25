@@ -168,16 +168,21 @@ class AzureDigitalTwinsUtil {
          * @return the modelInformationList completed
          */
         @JvmStatic
-        fun retrievePropertiesFromExtendedModel(modelInformationList: MutableList<DTDLModelInformation>):MutableList<DTDLModelInformation> {
+        fun retrievePropertiesFromBaseModels(modelInformationList: MutableList<DTDLModelInformation>):MutableList<DTDLModelInformation> {
             modelInformationList
-                .sortedBy { it.id }
-                .filter { it.isExtension }
-                .forEach { information ->
-                    val extendedModel =
-                        modelInformationList.find { information.baseModels?.contains(it.id) ?: false}
-                    extendedModel?.properties?.forEach { (key, value) ->
-                        information.properties.putIfAbsent(key, value)
-                    }
+                .filter { !it.isExtension }
+                .forEach { baseModel ->
+                  fun fillExtendingModelsProperties(currentModel: DTDLModelInformation) {
+                    modelInformationList
+                      .filter { it.isExtension && it.baseModels?.contains(currentModel.id) ?: false}
+                      .forEach { extendingModel ->
+                          currentModel.properties.forEach { (key, value) ->
+                              extendingModel.properties.putIfAbsent(key, value)
+                          }
+                          fillExtendingModelsProperties(extendingModel)
+                      }
+                  }
+                  fillExtendingModelsProperties(baseModel)
                 }
             return modelInformationList
         }
