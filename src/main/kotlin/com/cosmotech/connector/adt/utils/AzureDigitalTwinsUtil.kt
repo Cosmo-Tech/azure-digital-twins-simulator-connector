@@ -174,7 +174,7 @@ class AzureDigitalTwinsUtil {
                 .filter { it.isExtension }
                 .forEach { information ->
                     val extendedModel =
-                        modelInformationList.find { it.id == information.extensionModelId }
+                        modelInformationList.find { information.baseModels?.contains(it.id) ?: false}
                     extendedModel?.properties?.forEach { (key, value) ->
                         information.properties.putIfAbsent(key, value)
                     }

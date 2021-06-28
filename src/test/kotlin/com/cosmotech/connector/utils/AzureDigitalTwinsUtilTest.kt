@@ -68,7 +68,7 @@ class AzureDigitalTwinsUtilTest: AbstractUnitTest() {
         defaultDigitalTwinIdTest
     )
     private val dtWithExtendDTDLModel: String =
-        getResourceFile("utils/dt-with-extends.json")
+        getResourceFile("utils/dt-with-string-extends.json")
         .toFile()
         .readText(Charsets.UTF_8)
     private val dtWithoutExtendDTDLModel: String =
@@ -220,7 +220,7 @@ class AzureDigitalTwinsUtilTest: AbstractUnitTest() {
         val extensionDT = DTDLModelInformation(
             "dtmi:com:cosmotech:supply:TransportOperation;1",
             true,
-            "dtmi:com:cosmotech:supply:Operation;1",
+            listOf("dtmi:com:cosmotech:supply:Operation;1"),
             extensionProperties,
             dtWithExtendDTDLModel
         )

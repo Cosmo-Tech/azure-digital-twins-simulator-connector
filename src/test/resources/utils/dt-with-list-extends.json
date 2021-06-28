@@ -1,0 +1,27 @@
+{
+  "@context": "dtmi:dtdl:context;2",
+  "@id": "dtmi:com:cosmotech:supply:TransportOperation;1",
+  "@type": "Interface",
+  "extends": [
+    "dtmi:com:cosmotech:supply:Operation;1",
+    "dtmi:com:cosmotech:supply:Transport;1"
+  ],
+  "displayName": "TransportOperation",
+  "contents": [
+    {
+      "@type": "Property",
+      "name": "TransportDuration",
+      "schema": "integer"
+    },
+    {
+      "@type": "Property",
+      "name": "StockBeingProcessedAsString",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "StockBeingProcessedValuesAsString",
+      "schema": "string"
+    }
+  ]
+}
