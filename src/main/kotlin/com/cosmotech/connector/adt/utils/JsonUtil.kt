@@ -34,25 +34,24 @@ class JsonUtil {
         }
 
         /**
-         * Read the key "extends" in an JSON Object
-         * If exist returns a pair of { true, "extends_value"}
-         * where "extends_value" contains list of root models
-         * If not returns a pair of {false, empty list}
-         * @return a Pair(Boolean,List<String>) containing minimal extension information
+         * Read the key "extends" of a model data
+         * If exist returns "extends" as a list of values which are base models of model
+         * If not returns null
+         * @return null or List<String> containing minimal extension information
          */
         @JvmStatic
-        fun isExtension(jsonModel: JsonObject):Pair<Boolean,List<String>> {
+        fun readExtension(jsonModel: JsonObject):List<String>? {
             val extends = jsonModel[DTDL_EXTENDS_KEY]
             return if(null != extends) {
-                val extendsAsList = if (extends is String) {
+                if (extends is String) {
                     listOf(extends)
                 } else {
                     jsonModel.array(DTDL_EXTENDS_KEY)!!
                 }
-                Pair(true, extendsAsList)
             }
-            else
-                Pair(false, listOf())
+            else {
+                null
+            }
         }
 
     }

@@ -58,9 +58,8 @@ class AzureDigitalTwinsConnector : Connector<DigitalTwinsClient,List<CsvData>,Li
                 val propertiesModel = HashMap(modelDefaultProperties)
                 val propertiesName = JsonUtil.readPropertiesNameAndType(jsonModel)
                 propertiesModel.putAll(propertiesName)
-                val extensionInfo = JsonUtil.isExtension(jsonModel)
                 modelInformationList.add(
-                    DTDLModelInformation(modelId,extensionInfo.first,extensionInfo.second,propertiesModel,model)
+                    DTDLModelInformation(modelId,JsonUtil.readExtension(jsonModel),propertiesModel,model)
                 )
             }
 

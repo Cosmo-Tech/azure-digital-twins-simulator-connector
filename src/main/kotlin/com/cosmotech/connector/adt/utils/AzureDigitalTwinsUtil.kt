@@ -170,11 +170,11 @@ class AzureDigitalTwinsUtil {
         @JvmStatic
         fun retrievePropertiesFromBaseModels(modelInformationList: MutableList<DTDLModelInformation>):MutableList<DTDLModelInformation> {
             modelInformationList
-                .filter { !it.isExtension }
+                .filter { it.baseModels == null }
                 .forEach { baseModel ->
                   fun fillExtendingModelsProperties(currentModel: DTDLModelInformation) {
                     modelInformationList
-                      .filter { it.isExtension && it.baseModels?.contains(currentModel.id) ?: false}
+                      .filter { it.baseModels?.contains(currentModel.id) ?: false}
                       .forEach { extendingModel ->
                           currentModel.properties.forEach { (key, value) ->
                               extendingModel.properties.putIfAbsent(key, value)

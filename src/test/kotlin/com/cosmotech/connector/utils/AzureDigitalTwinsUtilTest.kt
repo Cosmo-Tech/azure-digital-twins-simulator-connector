@@ -211,7 +211,6 @@ class AzureDigitalTwinsUtilTest: AbstractUnitTest() {
     fun test_retrievePropertiesFromBaseModels() {
         val actionDT = DTDLModelInformation(
             "dtmi:com:cosmotech:supply:Action;1",
-            false,
             null,
             mutableMapOf(
                 "Date" to "string",
@@ -221,7 +220,6 @@ class AzureDigitalTwinsUtilTest: AbstractUnitTest() {
         )
         val opDT = DTDLModelInformation(
             "dtmi:com:cosmotech:supply:Operation;1",
-            true,
             listOf("dtmi:com:cosmotech:supply:Action;1"),
             mutableMapOf(
                 "Team" to "string"
@@ -230,7 +228,6 @@ class AzureDigitalTwinsUtilTest: AbstractUnitTest() {
         )
         val transportDT = DTDLModelInformation(
             "dtmi:com:cosmotech:supply:Transport;1",
-            false,
             null,
             mutableMapOf(
                 "Duration" to "integer",
@@ -240,7 +237,6 @@ class AzureDigitalTwinsUtilTest: AbstractUnitTest() {
         )
         val transportOpDT = DTDLModelInformation(
             "dtmi:com:cosmotech:supply:TransportOperation;1",
-            true,
             listOf("dtmi:com:cosmotech:supply:Operation;1", "dtmi:com:cosmotech:supply:Transport;1"),
             mutableMapOf(
                 "Capacity" to "integer"
