@@ -208,47 +208,82 @@ class AzureDigitalTwinsUtilTest: AbstractUnitTest() {
     }
 
     @Test
-    fun test_retrievePropertiesFromExtendedModel() {
-        val extensionProperties = mutableMapOf(
-            "TransportDuration" to "integer",
-            "StockBeingProcessedAsString" to "string",
-            "StockBeingProcessedValuesAsString" to "string"
-        )
-        val mainDTProperties = mutableMapOf(
-            "OutputType" to "string"
-        )
-        val extensionDT = DTDLModelInformation(
-            "dtmi:com:cosmotech:supply:TransportOperation;1",
-            true,
-            listOf("dtmi:com:cosmotech:supply:Operation;1"),
-            extensionProperties,
-            dtWithExtendDTDLModel
-        )
-        val mainDT = DTDLModelInformation(
-            "dtmi:com:cosmotech:supply:Operation;1",
-            false,
+    fun test_retrievePropertiesFromBaseModels() {
+        val actionDT = DTDLModelInformation(
+            "dtmi:com:cosmotech:supply:Action;1",
             null,
-            mainDTProperties,
-            dtWithoutExtendDTDLModel
+            mutableMapOf(
+                "Date" to "string",
+                "Priority" to "integer"
+            ),
+            ""
+        )
+        val opDT = DTDLModelInformation(
+            "dtmi:com:cosmotech:supply:Operation;1",
+            listOf("dtmi:com:cosmotech:supply:Action;1"),
+            mutableMapOf(
+                "Team" to "string"
+            ),
+            ""
+        )
+        val transportDT = DTDLModelInformation(
+            "dtmi:com:cosmotech:supply:Transport;1",
+            null,
+            mutableMapOf(
+                "Duration" to "integer",
+                "TransportType" to "enum"
+            ),
+            ""
+        )
+        val transportOpDT = DTDLModelInformation(
+            "dtmi:com:cosmotech:supply:TransportOperation;1",
+            listOf("dtmi:com:cosmotech:supply:Operation;1", "dtmi:com:cosmotech:supply:Transport;1"),
+            mutableMapOf(
+                "Capacity" to "integer"
+            ),
+            ""
         )
         val modelInformationList = mutableListOf(
-            extensionDT,
-            mainDT
+            actionDT, opDT, transportDT, transportOpDT
         )
 
-        assertFalse(extensionDT.properties.keys.containsAll(mainDTProperties.keys))
+        println("before")
+        print(actionDT)
+        print(opDT)
+        print(transportDT)
+        println(transportOpDT)
         val completedModelInformationList =
-            AzureDigitalTwinsUtil.retrievePropertiesFromExtendedModel(modelInformationList)
-        assertEquals(2,completedModelInformationList.size)
-        assertTrue(completedModelInformationList.contains(mainDT))
-        assertTrue(completedModelInformationList.contains(extensionDT))
-        assertNotNull(extensionDT.properties)
-        assertEquals(
-            4,
-            extensionDT.properties.size)
-        assertTrue(extensionDT.properties.keys.containsAll(mainDTProperties.keys))
-        for ((key,value) in mainDTProperties)
-            assertEquals(extensionDT.properties[key], value)
+            AzureDigitalTwinsUtil.retrievePropertiesFromBaseModels(modelInformationList)
+        println("after")
+        print(actionDT)
+        print(opDT)
+        print(transportDT)
+        println(transportOpDT)
+        assertEquals(4,completedModelInformationList.size)
+        assertTrue(completedModelInformationList.contains(actionDT))
+        assertTrue(completedModelInformationList.contains(opDT))
+        assertTrue(completedModelInformationList.contains(transportDT))
+        assertTrue(completedModelInformationList.contains(transportOpDT))
+        assertNotNull(actionDT.properties)
+        assertNotNull(opDT.properties)
+        assertNotNull(transportDT.properties)
+        assertNotNull(transportOpDT.properties)
+        assertEquals(2, actionDT.properties.size)
+        assertEquals(3, opDT.properties.size)
+        assertEquals(2, transportDT.properties.size)
+        assertEquals(6, transportOpDT.properties.size)
+        assertTrue(opDT.properties.keys.containsAll(actionDT.properties.keys))
+        assertTrue(transportOpDT.properties.keys.containsAll(actionDT.properties.keys))
+        assertTrue(transportOpDT.properties.keys.containsAll(opDT.properties.keys))
+        assertTrue(transportOpDT.properties.keys.containsAll(transportDT.properties.keys))
+        for ((key,value) in actionDT.properties)
+            assertEquals(opDT.properties[key], value)
+        for ((key,value) in actionDT.properties)
+            assertEquals(transportOpDT.properties[key], value)
+        for ((key,value) in opDT.properties)
+            assertEquals(transportOpDT.properties[key], value)
+        for ((key,value) in transportDT.properties)
+            assertEquals(transportOpDT.properties[key], value)
     }
 
 

@@ -75,26 +75,23 @@ class JsonUtilTest: AbstractUnitTest() {
     }
 
     @Test
-    fun test_isExtension_without_extends() {
-        val extensionPair = JsonUtil.Reader.isExtension(dtJsonWithoutExtendsModel)
-        assertFalse(extensionPair.first, "Check if the check for the '$DTDL_EXTENDS_KEY' properties is correct")
-        assertEquals(extensionPair.second,listOf(), "Check if the check for the 'extends' properties is correct")
+    fun test_readExtension_without_extends() {
+        val extensionList = JsonUtil.Reader.readExtension(dtJsonWithoutExtendsModel)
+        assertEquals(extensionList,null, "Check if the check for the 'extends' properties is correct")
     }
 
     @Test
-    fun test_isExtension_with_string_type_extends() {
-        val extensionPair = JsonUtil.Reader.isExtension(dtJsonWithStringExtendsModel)
-        assertTrue(extensionPair.first, "Check if the check for the '$DTDL_EXTENDS_KEY' properties is correct")
-        assertEquals(extensionPair.second,
+    fun test_readExtension_with_string_type_extends() {
+        val extensionList = JsonUtil.Reader.readExtension(dtJsonWithStringExtendsModel)
+        assertEquals(extensionList,
                      listOf("dtmi:com:cosmotech:supply:Operation;1"),
                      "Check if the check for the 'extends' properties is correct")
     }
 
     @Test
-    fun test_isExtension_with_list_type_extends() {
-        val extensionPair = JsonUtil.Reader.isExtension(dtJsonWithListExtendsModel)
-        assertTrue(extensionPair.first, "Check if the check for the '$DTDL_EXTENDS_KEY' properties is correct")
-        assertEquals(extensionPair.second,
+    fun test_readExtension_with_list_type_extends() {
+        val extensionList = JsonUtil.Reader.readExtension(dtJsonWithListExtendsModel)
+        assertEquals(extensionList,
                      listOf("dtmi:com:cosmotech:supply:Operation;1","dtmi:com:cosmotech:supply:Transport;1"),
                      "Check if the check for the 'extends' properties is correct")
     }
