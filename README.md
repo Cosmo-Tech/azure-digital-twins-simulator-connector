@@ -134,4 +134,4 @@ You can find all export files under the directory "local_export_dir_path" specif
 - [ ] Add more logs (maybe with some metrics: e.g. amount of twins/relationships)
 - [x] Handle properties on relationship
 - [x] Handle multiple extends for properties
-- [ ] Handle multiple extends
+- [x] Handle multiple extends
