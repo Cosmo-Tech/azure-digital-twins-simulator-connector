@@ -11,11 +11,10 @@ import com.cosmotech.connector.AbstractUnitTest
 import com.cosmotech.connector.adt.pojos.DTDLModelInformation
 import com.cosmotech.connector.adt.utils.AzureDigitalTwinsUtil
 import com.fasterxml.jackson.databind.util.RawValue
-import org.junit.Test
 import java.time.OffsetDateTime
 import java.util.*
+import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 

@@ -3,13 +3,13 @@
 
 package com.cosmotech.connector.utils
 
+import com.beust.klaxon.JsonArray
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Klaxon
 import com.cosmotech.connector.AbstractUnitTest
-import com.cosmotech.connector.adt.constants.DTDL_EXTENDS_KEY
 import com.cosmotech.connector.adt.utils.JsonUtil
-import org.junit.Test
 import java.io.StringReader
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -56,7 +56,7 @@ class JsonUtilTest: AbstractUnitTest() {
         )
 
     @Test
-    fun test_readPropertiesNameAndType() {
+    fun `readProperties Name And Type`() {
         val readPropertiesNameAndType = JsonUtil.Reader.readPropertiesNameAndType(dtJsonModel)
         assertEquals(
             readPropertiesNameAndType,
@@ -75,21 +75,22 @@ class JsonUtilTest: AbstractUnitTest() {
     }
 
     @Test
-    fun test_readExtension_without_extends() {
+    fun `readExtension without extends`() {
         val extensionList = JsonUtil.Reader.readExtension(dtJsonWithoutExtendsModel)
         assertEquals(extensionList,null, "Check if the check for the 'extends' properties is correct")
     }
 
     @Test
-    fun test_readExtension_with_string_type_extends() {
+    fun `readExtension with string type extends`() {
         val extensionList = JsonUtil.Reader.readExtension(dtJsonWithStringExtendsModel)
+        assertFalse { extensionList is JsonArray }
         assertEquals(extensionList,
                      listOf("dtmi:com:cosmotech:supply:Operation;1"),
                      "Check if the check for the 'extends' properties is correct")
     }
 
     @Test
-    fun test_readExtension_with_list_type_extends() {
+    fun `readExtension with list type extends`() {
         val extensionList = JsonUtil.Reader.readExtension(dtJsonWithListExtendsModel)
         assertEquals(extensionList,
                      listOf("dtmi:com:cosmotech:supply:Operation;1","dtmi:com:cosmotech:supply:Transport;1"),
