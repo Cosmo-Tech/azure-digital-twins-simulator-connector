@@ -1,8 +1,8 @@
 key: ADT Connector
-name: ADT Connector CAR
+name: ADT Connector Customer App Registration
 description: Connector for Azure Digital Twins with Customer App Registration credentials. Read ADT and write the data in CSV for a ScenarioRun
 repository: cosmo-tech/azure-digital-twins-simulator-connector
-version: "2.1.0"
+version: "2.2.0"
 tags:
   - ADT
 url: https://github.com/Cosmo-Tech/azure-digital-twins-simulator-connector

@@ -4,7 +4,18 @@ The aim of this project is to :
  - flatten these data in a list of CSVData Pojo defined in the library simulator-connector-commons
  - Export Csv Files containing these data
 
-## Change logs
+## Changelog
+
+### Version 2.2.0
+
+#### New Features
+
+* The container image for this project is continuously scanned for vulnerabilities
+* Multi-inheritance in DTDL is now handled
+
+#### Bug fixes
+
+* Handle DTDL 'extends' as either a string or a list.
 
 ### Version 2.1.0
 
