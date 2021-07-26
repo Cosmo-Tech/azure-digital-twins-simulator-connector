@@ -15,7 +15,7 @@ The aim of this project is to :
 
 #### Bug fixes
 
-* Handle DTDL 'extends' as either a string or a list.
+* DTDL `extends` can be a string or a list
 
 ### Version 2.1.0
 
