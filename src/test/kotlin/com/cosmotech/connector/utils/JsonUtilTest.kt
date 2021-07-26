@@ -12,6 +12,7 @@ import java.io.StringReader
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
@@ -59,44 +60,44 @@ class JsonUtilTest: AbstractUnitTest() {
     fun `readProperties Name And Type`() {
         val readPropertiesNameAndType = JsonUtil.Reader.readPropertiesNameAndType(dtJsonModel)
         assertEquals(
-            readPropertiesNameAndType,
-            mapOf(
-                "TimeStepDuration" to "string",
-                "TimeStepPerCycle" to "integer",
-                "NumberOfCycle" to "integer",
-                "StartingDate" to "dateTime",
-                "ManageBacklogQuantities" to "boolean",
-                "EnforceProductionPlan" to "boolean",
-                "OptimizationObjective" to "CompositeType",
-                "Demands" to "CompositeType"
-            ),
-            "Check that the list of Pair if the expected one"
+                mapOf(
+                        "TimeStepDuration" to "string",
+                        "TimeStepPerCycle" to "integer",
+                        "NumberOfCycle" to "integer",
+                        "StartingDate" to "dateTime",
+                        "ManageBacklogQuantities" to "boolean",
+                        "EnforceProductionPlan" to "boolean",
+                        "OptimizationObjective" to "CompositeType",
+                        "Demands" to "CompositeType"
+                ),
+                readPropertiesNameAndType,
+                "Check that the list of Pair if the expected one"
         )
     }
 
     @Test
     fun `readExtension without extends`() {
-        val extensionList = JsonUtil.Reader.readExtension(dtJsonWithoutExtendsModel)
-        assertEquals(extensionList,null, "Check if the check for the 'extends' properties is correct")
+        assertNull(JsonUtil.Reader.readExtension(dtJsonWithoutExtendsModel),
+                "Check if the check for the 'extends' properties is correct")
     }
 
     @Test
     fun `readExtension with string type extends`() {
         val extensionList = JsonUtil.Reader.readExtension(dtJsonWithStringExtendsModel)
         assertFalse { extensionList is JsonArray }
-        assertEquals(extensionList,
-                     listOf("dtmi:com:cosmotech:supply:Operation;1"),
-                     "Check if the check for the 'extends' properties is correct")
+        assertEquals(listOf("dtmi:com:cosmotech:supply:Operation;1"),
+                extensionList,
+                "Check if the check for the 'extends' properties is correct")
     }
 
     @Test
     fun `readExtension with list type extends`() {
         val extensionList = JsonUtil.Reader.readExtension(dtJsonWithListExtendsModel)
         assertTrue { extensionList is JsonArray }
-        assertEquals(listOf(
-                        "dtmi:com:cosmotech:supply:Operation;1",
+        assertEquals(
+                listOf("dtmi:com:cosmotech:supply:Operation;1",
                         "dtmi:com:cosmotech:supply:Transport;1"),
-                    extensionList?.toList(),
-                    "Check if the check for the 'extends' properties is correct")
+                extensionList?.toList(),
+                "Check if the check for the 'extends' properties is correct")
     }
 }
