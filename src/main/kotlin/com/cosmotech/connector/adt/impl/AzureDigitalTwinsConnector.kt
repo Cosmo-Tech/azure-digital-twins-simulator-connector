@@ -68,6 +68,9 @@ class AzureDigitalTwinsConnector : Connector<DigitalTwinsClient,List<CsvData>,Li
 
         val digitalTwinInformation = constructDigitalTwinInstances(modelInformationList, client)
 
+        val allRelationships = client.query("SELECT * FROM RELATIONSHIPS", BasicRelationship::class.java)
+        val allRelationshipsSorted = allRelationships.sortedBy { it.name }
+
         digitalTwinInformation
             .sortedBy { it.second.id }
             .forEach { (modelInformation,dtInstance) ->
@@ -80,15 +83,16 @@ class AzureDigitalTwinsConnector : Connector<DigitalTwinsClient,List<CsvData>,Li
                         dataToExport
                     )
 
-                val currentRelationships =
-                    client
-                        .listRelationships(dtInstance.id, BasicRelationship::class.java)
-                        .toList()
-                        .groupBy { it.name }
+                // Find all relationships for dtInstance.id
+                val relationshipOfTwin = mutableMapOf<String, List<BasicRelationship>>()
+                val filteredRelationship = allRelationshipsSorted.filter { rel -> rel.sourceId == dtInstance.id }
+                if (filteredRelationship.isNotEmpty()){
+                    relationshipOfTwin[filteredRelationship.elementAt(0).name] = filteredRelationship
+                }
 
                 AzureDigitalTwinsUtil
                     .constructRelationshipInformation(
-                        currentRelationships,
+                        relationshipOfTwin,
                         dataToExport
                     )
             }
