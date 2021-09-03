@@ -16,6 +16,7 @@ import com.cosmotech.connector.commons.pojo.CsvData
 import org.apache.logging.log4j.LogManager
 import java.io.StringReader
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -66,36 +67,38 @@ class AzureDigitalTwinsConnector : Connector<DigitalTwinsClient,List<CsvData>,Li
 
         modelInformationList = AzureDigitalTwinsUtil.retrievePropertiesFromBaseModels(modelInformationList)
 
+        LOGGER.info("Fetching Digital Twin Instances...")
+        val fetchDTInstancesStart = System.nanoTime()
         val digitalTwinInformation = constructDigitalTwinInstances(modelInformationList, client)
-
-        val allRelationships = client.query("SELECT * FROM RELATIONSHIPS", BasicRelationship::class.java)
-        val allRelationshipsSorted = allRelationships.sortedBy { it.name }
+        val fetchDTInstancesTiming = System.nanoTime() - fetchDTInstancesStart
+        LOGGER.debug("... Operation took {} ns ({} ms)",
+                fetchDTInstancesTiming,
+                TimeUnit.NANOSECONDS.toMillis(fetchDTInstancesTiming))
 
         digitalTwinInformation
-            .sortedBy { it.second.id }
-            .forEach { (modelInformation,dtInstance) ->
-                val dtHeaderDefaultValues = mutableListOf<String>(dtInstance.id)
-                AzureDigitalTwinsUtil
-                    .constructDigitalTwinInformation(
-                        dtInstance,
-                        modelInformation.properties,
-                        dtHeaderDefaultValues,
-                        dataToExport
-                    )
-
-                // Find all relationships for dtInstance.id
-                val relationshipOfTwin = mutableMapOf<String, List<BasicRelationship>>()
-                val filteredRelationship = allRelationshipsSorted.filter { rel -> rel.sourceId == dtInstance.id }
-                if (filteredRelationship.isNotEmpty()){
-                    relationshipOfTwin[filteredRelationship.elementAt(0).name] = filteredRelationship
+                .sortedBy { it.second.id }
+                .forEach { (modelInformation,dtInstance) ->
+                    val dtHeaderDefaultValues = mutableListOf<String>(dtInstance.id)
+                    AzureDigitalTwinsUtil
+                            .constructDigitalTwinInformation(
+                                    dtInstance,
+                                    modelInformation.properties,
+                                    dtHeaderDefaultValues,
+                                    dataToExport
+                            )
                 }
 
-                AzureDigitalTwinsUtil
-                    .constructRelationshipInformation(
-                        relationshipOfTwin,
-                        dataToExport
-                    )
-            }
+        LOGGER.info("Fetching Digital Twin Relationships...")
+        val constructRelationshipStart = System.nanoTime()
+        AzureDigitalTwinsUtil.constructRelationshipInformation(
+                client.query("SELECT * FROM RELATIONSHIPS", BasicRelationship::class.java)
+                        .groupBy { it.name }
+                        .toSortedMap(),
+                dataToExport)
+        val constructRelationshipTiming = System.nanoTime() - constructRelationshipStart
+        LOGGER.debug("... Operation took {} ns ({} ms)",
+                constructRelationshipTiming,
+                TimeUnit.NANOSECONDS.toMillis(constructRelationshipTiming))
 
         return dataToExport
     }
