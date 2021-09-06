@@ -107,7 +107,8 @@ class AzureDigitalTwinsConnector : Connector<DigitalTwinsClient,List<CsvData>,Li
         val client = this.createClient()
         val preparedData = this.prepare(client)
         val exportCsvFilesPath = AzureDigitalTwinsUtil.getExportCsvFilesPath()
-        LOGGER.info("Exported Digital Twins Data")
+        LOGGER.info("Exporting Digital Twins Data to '{}'",
+                exportCsvFilesPath?.orElse("???"))
         preparedData.forEach {
             LOGGER.debug("Short Model: ${it.fileName} , " +
                     "CSV Headers: ${it.headerNameAndType} , " +
