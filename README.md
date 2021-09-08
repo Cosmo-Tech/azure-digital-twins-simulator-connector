@@ -6,6 +6,24 @@ The aim of this project is to :
 
 ## Changelog
 
+### Version 2.3.0
+
+#### New Features
+
+* The connector logs additional information that could be helpful for debugging, like the overall execution time
+
+#### Performance Improvements
+
+* Relationships are now fetched via a bulk retrieval query, allowing for substantial performance improvements on the overall execution time when there are lots of relationships.
+
+#### Dependency updates
+
+* Bump commons-csv from 1.8 to 1.9.0
+* Bump smallrye-config from 2.4.2 to 2.4.4
+* Bump azure-identity from 1.3.3 to 1.3.5
+* Bump jib-maven-plugin from 3.1.2 to 3.1.4
+* Bump kotlin.version from 1.5.21 to 1.5.30
+
 ### Version 2.2.0
 
 #### New Features
