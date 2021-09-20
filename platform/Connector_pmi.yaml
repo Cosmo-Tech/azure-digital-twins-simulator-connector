@@ -1,3 +1,9 @@
+#
+# THIS FILE IS A WORK IN PROGRESS, NOT RECOMMENDED YET FOR GENERAL USE.
+#
+# NOTE: This connector makes use of an Azure Pod Managed Identity
+# to authenticate against the Azure Digital Twins API.
+# Register either the 'Connector.yaml' or 'Connector_pmi.yaml' file instead.
 key: ADT Connector
 name: ADT Connector PMI
 description: Connector for Azure Digital Twins with pod managed identity. Read ADT and write the data in CSV for a ScenarioRun
