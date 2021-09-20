@@ -1,3 +1,7 @@
+# NOTE: This connector makes use of the core Platform credentials to authenticate against the Azure Digital Twins API.
+# This will not work if the Platform was deployed in the customer tenant,
+# because the connector would need to use the credentials of a customer-provided app registration.
+# In this case, please register the 'Connector_car.yaml' file instead.
 key: ADT Connector
 name: ADT Connector
 description: Connector for Azure Digital Twins. Read ADT and write the data in CSV for a ScenarioRun
