@@ -1,3 +1,7 @@
+# NOTE: This connector makes use of the credentials of a customer-provided
+# app registration to authenticate against the Azure Digital Twins API.
+# Register this connector only if the Platform was deployed in the customer tenant.
+# Otherwise, please use the 'Connector.yaml' file instead.
 key: ADT Connector
 name: ADT Connector Customer App Registration
 description: Connector for Azure Digital Twins with Customer App Registration credentials. Read ADT and write the data in CSV for a ScenarioRun
