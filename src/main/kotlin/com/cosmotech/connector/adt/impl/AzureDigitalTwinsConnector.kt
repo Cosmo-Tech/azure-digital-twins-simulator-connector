@@ -50,7 +50,6 @@ class AzureDigitalTwinsConnector : Connector<DigitalTwinsClient,List<CsvData>,Li
         var modelInformationList = mutableListOf<DTDLModelInformation>()
         // Retrieve model Information
         listModels
-            .sortedBy { it.modelId }
             .forEach { modelData ->
                 // DTDL Model Information
                 val modelId = modelData.modelId
@@ -67,33 +66,35 @@ class AzureDigitalTwinsConnector : Connector<DigitalTwinsClient,List<CsvData>,Li
 
         modelInformationList = AzureDigitalTwinsUtil.retrievePropertiesFromBaseModels(modelInformationList)
 
-        LOGGER.info("Fetching Digital Twin Instances...")
+        LOGGER.info("Fetching Digital Twin Instances Information...")
         val fetchDTInstancesStart = System.nanoTime()
-        val digitalTwinInformation = constructDigitalTwinInstances(modelInformationList, client)
+
+        val digitalTwins = client.query("SELECT * FROM DIGITALTWINS", BasicDigitalTwin::class.java)
+            .groupBy { it.metadata.modelId }
+        modelInformationList.forEach {
+            val digitalTwinsByModel = digitalTwins[it.id]
+            digitalTwinsByModel?.forEach { dtInstance ->
+                val dtHeaderDefaultValues = mutableListOf<String>(dtInstance.id)
+                AzureDigitalTwinsUtil
+                    .constructDigitalTwinInformation(
+                        dtInstance,
+                        it.properties,
+                        dtHeaderDefaultValues,
+                        dataToExport
+                    )
+            }
+        }
+
         val fetchDTInstancesTiming = System.nanoTime() - fetchDTInstancesStart
         LOGGER.debug("... Operation took {} ns ({} ms)",
                 fetchDTInstancesTiming,
                 TimeUnit.NANOSECONDS.toMillis(fetchDTInstancesTiming))
 
-        digitalTwinInformation
-                .sortedBy { it.second.id }
-                .forEach { (modelInformation,dtInstance) ->
-                    val dtHeaderDefaultValues = mutableListOf<String>(dtInstance.id)
-                    AzureDigitalTwinsUtil
-                            .constructDigitalTwinInformation(
-                                    dtInstance,
-                                    modelInformation.properties,
-                                    dtHeaderDefaultValues,
-                                    dataToExport
-                            )
-                }
-
         LOGGER.info("Fetching Digital Twin Relationships...")
         val constructRelationshipStart = System.nanoTime()
         AzureDigitalTwinsUtil.constructRelationshipInformation(
                 client.query("SELECT * FROM RELATIONSHIPS", BasicRelationship::class.java)
-                        .groupBy { it.name }
-                        .toSortedMap(),
+                        .groupBy { it.name },
                 dataToExport)
         val constructRelationshipTiming = System.nanoTime() - constructRelationshipStart
         LOGGER.debug("... Operation took {} ns ({} ms)",
@@ -125,30 +126,5 @@ class AzureDigitalTwinsConnector : Connector<DigitalTwinsClient,List<CsvData>,Li
             it.writeFile()
         }
         return preparedData
-    }
-
-    /**
-     * Fetch and regroup all existing digital twin instances
-     * @param modelInformationList the existing DT model list
-     * @param client the Azure Digital Twin client
-     * @return the list of Digital Twin instances
-     */
-    private fun constructDigitalTwinInstances(
-        modelInformationList: MutableList<DTDLModelInformation>,
-        client: DigitalTwinsClient
-    ): MutableList<Pair<DTDLModelInformation,BasicDigitalTwin>> {
-        val digitalTwinInformation = mutableListOf<Pair<DTDLModelInformation,BasicDigitalTwin>>()
-        // Construct DT information list
-        modelInformationList.forEach { modelInformation ->
-            val digitalTwinInModel = client.query(
-                "SELECT * FROM DIGITALTWINS WHERE IS_OF_MODEL('${modelInformation.id}', exact)",
-                BasicDigitalTwin::class.java
-            )
-            digitalTwinInModel
-                .forEach {
-                    digitalTwinInformation.add(Pair(modelInformation,it))
-                }
-        }
-        return digitalTwinInformation
     }
 }
