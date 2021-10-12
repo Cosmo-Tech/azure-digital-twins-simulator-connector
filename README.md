@@ -65,7 +65,7 @@ Here is the list of properties that should be changed (in ```META-INF/microprofi
 If you want to overwrite these properties, you can write your own property values in the ```META-INF/microprofile-config.properties``` file, or set a property's system, or an environment variable named :
 - **AZURE_CLIENT_ID** : the Azure client id (can be found under the App registration screen)
 - **AZURE_TENANT_ID** : the Azure Tenant id (can be found under the App registration screen)
-- **AZURE_CLIENT_SECRET** : the app client secret (can be found under the App registration/certificates and secrets screen)
+- **AZURE_CLIENT_SECRET** : the app client secret (given only during a client creation, must be asked to the sdk team)
 - **AZURE_DIGITAL_TWINS_URL** : the url of the ADT targeted (can be found in the specific resource screen)
 - **CSM_FETCH_ABSOLUTE_PATH** : the absolute path to export all csv files (don't forget the / at the end)
 
