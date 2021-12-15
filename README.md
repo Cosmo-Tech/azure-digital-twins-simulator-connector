@@ -6,6 +6,10 @@ The aim of this project is to :
 
 ## Changelog
 
+### Version 2.3.1
+
+* Bump log4j-api and log4j-core from 2.14.1 to 2.16.0 to fix Log4Shell (CVE-2021-44228) vulnerability
+
 ### Version 2.3.0
 
 #### New Features
