@@ -74,6 +74,7 @@ If you want to overwrite these properties, you can write your own property value
 - **AZURE_CLIENT_ID** : the Azure client id (can be found under the App registration screen)
 - **AZURE_TENANT_ID** : the Azure Tenant id (can be found under the App registration screen)
 - **AZURE_CLIENT_SECRET** : the app client secret (a already created secret can not be retrieved, thus it must be asked from its creator or a new one should be created)
+- **AZURE_ADT_TENANT_ID** : the ADT tenant id
 - **AZURE_DIGITAL_TWINS_URL** : the url of the ADT targeted (can be found in the specific resource screen)
 - **CSM_FETCH_ABSOLUTE_PATH** : the absolute path to export all csv files (don't forget the / at the end)
 
