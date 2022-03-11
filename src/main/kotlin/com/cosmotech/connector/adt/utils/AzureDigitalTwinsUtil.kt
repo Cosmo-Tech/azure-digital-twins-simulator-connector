@@ -162,6 +162,33 @@ class AzureDigitalTwinsUtil {
             return relationshipsToExport
         }
 
+        fun constructRelationshipInformation(
+                relationName: String,
+                basicRelationships:  List<BasicRelationship>,
+                relationshipsToExport: MutableList<CsvData>
+        ): MutableList<CsvData>{
+            val relationInformation = relationshipsToExport.find { it.fileName == relationName }
+            if (null != relationInformation) {
+                basicRelationships.forEach { relation ->
+                    relationInformation.rows.add(constructRelationshipRowValue(relation))
+                }
+            } else {
+                val relationshipHeaderName = relationshipDefaultHeader.toMutableMap()
+                if (basicRelationships.isNotEmpty()) {
+                    //TODO Handle relationship properties correctly
+                    basicRelationships[0].properties.keys.forEach {
+                        relationshipHeaderName[it] = "string"
+                    }
+                    val rows = mutableListOf<MutableList<String>>()
+                    basicRelationships.forEach { relation ->
+                        rows.add(constructRelationshipRowValue(relation))
+                    }
+                    relationshipsToExport.add(CsvData(relationName, relationshipHeaderName,rows))
+                }
+            }
+            return relationshipsToExport
+        }
+
         /**
          * Recursively add properties from base model to all the derived models
          * @param baseModel
@@ -203,6 +230,28 @@ class AzureDigitalTwinsUtil {
         @JvmStatic
         fun getExportCsvFilesPath(): Optional<String>? {
             return configuration.getOptionalValue(CSM_FETCH_ABSOLUTE_PATH,String::class.java)
+        }
+
+        /** Do we use multithreading*/
+        @JvmStatic
+        fun useMultithreading(): Boolean{
+            val multithreadingOptional = configuration.getOptionalValue(CSM_USE_MULTITHREADING,String::class.java)
+            var useMultithreading = false
+            if (multithreadingOptional?.isPresent == true) {
+                useMultithreading = multithreadingOptional.get().toBoolean()
+            }
+            return useMultithreading
+        }
+
+        /** Get the number of thread to use*/
+        @JvmStatic
+        fun getNumberOfThread(): Int{
+            val numberOfThreadOptional = configuration.getOptionalValue(CSM_NUMBER_OF_THREAD,String::class.java)
+            var numberOfThread = 8
+            if (numberOfThreadOptional?.isPresent == true) {
+                numberOfThread = numberOfThreadOptional.get().toInt()
+            }
+            return numberOfThread
         }
 
         /** Get the Azure Tenant Id*/

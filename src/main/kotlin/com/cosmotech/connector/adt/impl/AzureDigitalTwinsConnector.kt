@@ -31,16 +31,16 @@ class AzureDigitalTwinsConnector : Connector<DigitalTwinsClient,List<CsvData>,Li
     override fun createClient(): DigitalTwinsClient {
         LOGGER.info("Create Digital Twins Client")
         return DigitalTwinsClientBuilder()
-            .credential(
-                ClientSecretCredentialBuilder()
-                    .clientId(AzureDigitalTwinsUtil.getAzureClientId())
-                    .tenantId(AzureDigitalTwinsUtil.getAzureTenantId())
-                    .clientSecret(AzureDigitalTwinsUtil.getAzureClientSecret())
-                    .build()
-            )
-            .endpoint(AzureDigitalTwinsUtil.getInstanceUrl())
-            .serviceVersion(DigitalTwinsServiceVersion.getLatest())
-            .buildClient()
+                .credential(
+                        ClientSecretCredentialBuilder()
+                                .clientId(AzureDigitalTwinsUtil.getAzureClientId())
+                                .tenantId(AzureDigitalTwinsUtil.getAzureTenantId())
+                                .clientSecret(AzureDigitalTwinsUtil.getAzureClientSecret())
+                                .build()
+                )
+                .endpoint(AzureDigitalTwinsUtil.getInstanceUrl())
+                .serviceVersion(DigitalTwinsServiceVersion.getLatest())
+                .buildClient()
     }
 
     override fun prepare(client: DigitalTwinsClient): List<CsvData> {
@@ -50,19 +50,19 @@ class AzureDigitalTwinsConnector : Connector<DigitalTwinsClient,List<CsvData>,Li
         var modelInformationList = mutableListOf<DTDLModelInformation>()
         // Retrieve model Information
         listModels
-            .forEach { modelData ->
-                // DTDL Model Information
-                val modelId = modelData.modelId
-                val model = client.getModel(modelId).dtdlModel
-                val jsonModel = Klaxon().parseJsonObject(StringReader(model))
-                // DT Information
-                val propertiesModel = HashMap(modelDefaultProperties)
-                val propertiesName = JsonUtil.readPropertiesNameAndType(jsonModel)
-                propertiesModel.putAll(propertiesName)
-                modelInformationList.add(
-                    DTDLModelInformation(modelId,JsonUtil.readExtension(jsonModel),propertiesModel,model)
-                )
-            }
+                .forEach { modelData ->
+                    // DTDL Model Information
+                    val modelId = modelData.modelId
+                    val model = client.getModel(modelId).dtdlModel
+                    val jsonModel = Klaxon().parseJsonObject(StringReader(model))
+                    // DT Information
+                    val propertiesModel = HashMap(modelDefaultProperties)
+                    val propertiesName = JsonUtil.readPropertiesNameAndType(jsonModel)
+                    propertiesModel.putAll(propertiesName)
+                    modelInformationList.add(
+                            DTDLModelInformation(modelId,JsonUtil.readExtension(jsonModel),propertiesModel,model)
+                    )
+                }
 
         modelInformationList = AzureDigitalTwinsUtil.retrievePropertiesFromBaseModels(modelInformationList)
 
@@ -70,18 +70,18 @@ class AzureDigitalTwinsConnector : Connector<DigitalTwinsClient,List<CsvData>,Li
         val fetchDTInstancesStart = System.nanoTime()
 
         val digitalTwins = client.query("SELECT * FROM DIGITALTWINS", BasicDigitalTwin::class.java)
-            .groupBy { it.metadata.modelId }
+                .groupBy { it.metadata.modelId }
         modelInformationList.forEach {
             val digitalTwinsByModel = digitalTwins[it.id]
             digitalTwinsByModel?.forEach { dtInstance ->
                 val dtHeaderDefaultValues = mutableListOf<String>(dtInstance.id)
                 AzureDigitalTwinsUtil
-                    .constructDigitalTwinInformation(
-                        dtInstance,
-                        it.properties,
-                        dtHeaderDefaultValues,
-                        dataToExport
-                    )
+                        .constructDigitalTwinInformation(
+                                dtInstance,
+                                it.properties,
+                                dtHeaderDefaultValues,
+                                dataToExport
+                        )
             }
         }
 
@@ -115,11 +115,11 @@ class AzureDigitalTwinsConnector : Connector<DigitalTwinsClient,List<CsvData>,Li
                     "CSV Headers: ${it.headerNameAndType} , " +
                     "rows : ${it.rows}")
             if (exportCsvFilesPath?.isPresent == true) {
-              var exportDirectory = exportCsvFilesPath.get()
-              if (!exportDirectory.endsWith("/") ) {
-                  exportDirectory = exportDirectory.plus("/")
-              }
-              it.exportDirectory = exportDirectory
+                var exportDirectory = exportCsvFilesPath.get()
+                if (!exportDirectory.endsWith("/") ) {
+                    exportDirectory = exportDirectory.plus("/")
+                }
+                it.exportDirectory = exportDirectory
             }
             val directory = File(it.exportDirectory)
             directory.mkdirs()
