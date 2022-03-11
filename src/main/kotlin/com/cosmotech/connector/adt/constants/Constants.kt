@@ -22,6 +22,12 @@ const val AZURE_DIGITAL_TWINS_URL_KEY = "azure.digital.twins.url"
 /** Environment variable in which the absolute export path for CSVs is stored */
 const val CSM_FETCH_ABSOLUTE_PATH = "csm.fetch.absolute.path"
 
+/** Environment variable to switch between single or multithread */
+const val CSM_USE_MULTITHREADING = "csm.use.multithreading"
+
+/** Environment variable to specify the number of thread to use */
+const val CSM_NUMBER_OF_THREAD = "csm.number.of.thread"
+
 /**
  * Default header cell name for digital twins
  */
