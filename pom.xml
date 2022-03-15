@@ -14,7 +14,7 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <kotlin.version>1.5.31</kotlin.version>
     <apache.commons.csv.version>1.9.0</apache.commons.csv.version>
-    <com.beust.klaxon.version>5.5</com.beust.klaxon.version>
+    <com.beust.klaxon.version>5.6</com.beust.klaxon.version>
     <apache.commons-io.version>2.11.0</apache.commons-io.version>
     <simulator-connector-commons.version>0.2.1</simulator-connector-commons.version>
     <smallrye-config.version>2.5.0</smallrye-config.version>
@@ -159,7 +159,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
+        <version>3.10.1</version>
         <executions>
           <!-- Replacing default-compile as it is treated specially by maven -->
           <execution>
@@ -238,7 +238,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.1</version>
+          <version>3.10.1</version>
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
