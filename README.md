@@ -6,6 +6,30 @@ The aim of this project is to :
 
 ## Changelog
 
+### Version 2.3.3
+#### Fix:
+* Warning at runtime Failed to load class "org.slf4j.impl.StaticLoggerBinder"
+
+#### Dependency updates:
+* Bump actions/checkout from 2.3.4 to 3
+* Bump actions/setup-java from 2.3.0 to 3
+* Bump azure-digitaltwins-core from 1.1.2 to 1.2.0
+* Bump azure-identity from 1.3.6 to 1.4.6
+* Bump docker/login-action from 1.10.0 to 1.14.1
+* Bump jib-maven-plugin from 3.1.4 to 3.2.0
+* Bump junit-bom from 5.8.0 to 5.8.2
+* Bump klaxon from 5.5 to 5.6
+* Bump kotlin.version from 1.5.31 to 1.6.10
+* Bump log4j-core from 2.17.0 to 2.17.2
+* Bump log4j-api from 2.17.0 to 2.17.2
+* Bump maven-compiler-plugin from 3.8.1 to 3.10.1
+* Bump maven-jar-plugin from 3.2.0 to 3.2.2
+* Bump smallrye-config from 2.5.0 to 2.9.1
+
+#### Documentation:
+* Add doc for AZURE_ADT_TENANT_ID environment variable
+
+
 ### Version 2.3.2
 
 * Bump log4j-api and log4j-core to 2.16.0 in remediation to the Log4Shell ([CVE-2021-44228](https://nvd.nist.gov/vuln/detail/CVE-2021-44228)) (and its variants, like [CVE-2021-45105](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45105)) vulnerabilities
