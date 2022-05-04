@@ -3,18 +3,24 @@
 
 package com.cosmotech.connector.adt.impl
 
+import com.azure.core.util.Context
 import com.azure.digitaltwins.core.*
-import com.azure.digitaltwins.core.models.DigitalTwinsModelData
+import com.azure.digitaltwins.core.models.ListModelsOptions
 import com.azure.identity.ClientSecretCredentialBuilder
-import com.cosmotech.connector.adt.impl.runnable.*
+import com.beust.klaxon.Klaxon
+import com.cosmotech.connector.adt.constants.modelDefaultProperties
+import com.cosmotech.connector.adt.impl.callable.ManageDigitalTwins
+import com.cosmotech.connector.adt.impl.callable.WriteFiles
 import com.cosmotech.connector.adt.pojos.DTDLModelInformation
 import com.cosmotech.connector.adt.utils.AzureDigitalTwinsUtil
+import com.cosmotech.connector.adt.utils.JsonUtil
 import com.cosmotech.connector.commons.Connector
 import com.cosmotech.connector.commons.pojo.CsvData
 import org.apache.logging.log4j.LogManager
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.Executors
-import java.util.concurrent.locks.ReentrantLock
+import org.apache.logging.log4j.Logger
+import java.io.StringReader
+import java.util.concurrent.*
+import java.util.stream.Collectors
 
 /**
  * Connector for Azure Digital Twin
@@ -22,15 +28,9 @@ import java.util.concurrent.locks.ReentrantLock
 class AzureDigitalTwinsConnectorMultithread : Connector<DigitalTwinsClient,List<CsvData>,List<CsvData>> {
 
     companion object {
-        val LOGGER = LogManager.getLogger(AzureDigitalTwinsConnectorMultithread::class.java.name)
-        // Should we use Runtime.getRuntime().availableProcessors()
-        val executor = Executors.newFixedThreadPool(AzureDigitalTwinsUtil.getNumberOfThread())
+        val LOGGER: Logger = LogManager.getLogger(AzureDigitalTwinsConnectorMultithread::class.java.name)
+        val executor: ExecutorService = Executors.newFixedThreadPool(AzureDigitalTwinsUtil.getNumberOfThread())
     }
-
-    private val constructDigitalTwinInformationMutex = ReentrantLock()
-    private val retrieveModelInformationMutex = ReentrantLock()
-    private val exportDataToMutex = ReentrantLock()
-    private val constructRelationshipInformationMutex = ReentrantLock()
 
     override fun createClient(): DigitalTwinsClient {
         LOGGER.info("Create Digital Twins Client")
@@ -49,66 +49,89 @@ class AzureDigitalTwinsConnectorMultithread : Connector<DigitalTwinsClient,List<
 
     override fun prepare(client: DigitalTwinsClient): List<CsvData> {
         LOGGER.info("Start preparing Digital Twins Data")
-        val listModels = client.listModels()
-        val dataToExport = mutableListOf<CsvData>()
-        var modelInformationList = mutableListOf<DTDLModelInformation>()
-
+        val modelOptions = ListModelsOptions()
+        modelOptions.includeModelDefinition = true;
+        val listModels = client.listModels(modelOptions, Context.NONE)
+        val modelInformationList = mutableListOf<DTDLModelInformation>()
         // Retrieve model Information
-        for (modelData: DigitalTwinsModelData in listModels){
-            executor.execute(
-                    RetrieveModelInformation(client, modelData, modelInformationList, retrieveModelInformationMutex))
-        }
-
-        modelInformationList = AzureDigitalTwinsUtil.retrievePropertiesFromBaseModels(modelInformationList)
+        listModels
+            .forEach { modelData ->
+                val modelId = modelData.modelId
+                val dtdlModel = modelData.dtdlModel
+                val jsonModel = Klaxon().parseJsonObject(StringReader(dtdlModel))
+                val propertiesModel = HashMap(modelDefaultProperties)
+                val propertiesName = JsonUtil.readPropertiesNameAndType(jsonModel)
+                propertiesModel.putAll(propertiesName)
+                modelInformationList.add(
+                    DTDLModelInformation(modelId,
+                        JsonUtil.readExtension(jsonModel),propertiesModel, dtdlModel
+                    )
+                )
+            }
 
         LOGGER.info("Fetching Digital Twin Instances Information...")
         val fetchDTInstancesStart = System.nanoTime()
 
-        val future = executor.submit(QueryDigitalTwins(client))
+        val completableFutureList : MutableList<CompletableFuture<CsvData?>> = mutableListOf()
 
-        val digitalTwins = future.get()
-        modelInformationList.forEach {
-            val digitalTwinsByModel = digitalTwins[it.id]
-            val properties = it.properties
-            digitalTwinsByModel?.forEach { dtInstance ->
-                executor.execute(ConstructDigitalTwinInformation(dtInstance, properties, dataToExport,constructDigitalTwinInformationMutex))
-            }
+        for(model in modelInformationList){
+            completableFutureList.add(CompletableFuture.supplyAsync(
+                ManageDigitalTwins(
+                    model.id,
+                    modelInformationList,
+                    client
+                ), executor
+            ))
         }
+
+        val csvDataList =
+            completableFutureList.stream().map(CompletableFuture<CsvData?>::join).collect(
+                Collectors.toList())
+        csvDataList.removeAll(listOf(null))
 
         val fetchDTInstancesTiming = System.nanoTime() - fetchDTInstancesStart
-        LOGGER.debug("... Operation took {} ns ({} ms)",
-                fetchDTInstancesTiming,
-                TimeUnit.NANOSECONDS.toMillis(fetchDTInstancesTiming))
+        LOGGER.debug("Fetching Digital Twin Instances Information Operation took {} ns ({} ms)",
+            fetchDTInstancesTiming,
+            TimeUnit.NANOSECONDS.toMillis(fetchDTInstancesTiming))
+
 
         LOGGER.info("Fetching Digital Twin Relationships...")
-        val constructRelationshipStart = System.nanoTime()
+        val fetchRelationshipInstancesStart = System.nanoTime()
+        AzureDigitalTwinsUtil.constructRelationshipInformation(
+            client.query("SELECT * FROM RELATIONSHIPS", BasicRelationship::class.java)
+                .groupBy { it.name },
+            csvDataList as MutableList<CsvData>
+        )
+        val fetchRelationshipTiming = System.nanoTime() - fetchRelationshipInstancesStart
+        LOGGER.info("Fetching Digital Twin Relationships Operation took {} ns ({} ms)",
+            fetchRelationshipTiming,
+            TimeUnit.NANOSECONDS.toMillis(fetchRelationshipTiming))
 
-        val futureRelationships = executor.submit(QueryRelationships(client))
-
-        val relationships = futureRelationships.get()
-        relationships.entries.forEach {(relationName, basicRelationships) ->
-            executor.execute(ConstructRelationshipInformation(
-                    relationName, basicRelationships, dataToExport,constructRelationshipInformationMutex))
-        }
-
-        val constructRelationshipTiming = System.nanoTime() - constructRelationshipStart
-        LOGGER.debug("... Operation took {} ns ({} ms)",
-                constructRelationshipTiming,
-                TimeUnit.NANOSECONDS.toMillis(constructRelationshipTiming))
-
-        return dataToExport
+        return csvDataList
     }
 
     override fun process(): List<CsvData> {
         val client = this.createClient()
         val preparedData = this.prepare(client)
         val exportCsvFilesPath = AzureDigitalTwinsUtil.getExportCsvFilesPath()
+        var exportPath ="/"
+        if (exportCsvFilesPath?.isPresent == true){
+            exportPath = exportCsvFilesPath.get()
+        }
         LOGGER.info("Exporting Digital Twins Data to '{}'",
                 exportCsvFilesPath?.orElse("???"))
-
-        for(data: CsvData in preparedData){
-            executor.execute(ExportDataTo(data, exportCsvFilesPath, exportDataToMutex))
+        val completableFutureList : MutableList<CompletableFuture<String>> = mutableListOf()
+        for(csvData in preparedData){
+            completableFutureList.add(CompletableFuture.supplyAsync(
+                WriteFiles(
+                    csvData,
+                    exportPath
+                ), executor
+            ))
         }
+        completableFutureList.stream().map(CompletableFuture<String>::join).collect(
+                Collectors.toList())
+
         executor.shutdown()
         return preparedData
     }
