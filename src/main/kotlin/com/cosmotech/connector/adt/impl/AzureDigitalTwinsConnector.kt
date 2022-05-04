@@ -3,7 +3,9 @@
 
 package com.cosmotech.connector.adt.impl
 
+import com.azure.core.util.Context
 import com.azure.digitaltwins.core.*
+import com.azure.digitaltwins.core.models.ListModelsOptions
 import com.azure.identity.ClientSecretCredentialBuilder
 import com.azure.identity.DefaultAzureCredentialBuilder
 import com.beust.klaxon.Klaxon
@@ -45,7 +47,9 @@ class AzureDigitalTwinsConnector : Connector<DigitalTwinsClient,List<CsvData>,Li
 
     override fun prepare(client: DigitalTwinsClient): List<CsvData> {
         LOGGER.info("Start preparing Digital Twins Data")
-        val listModels = client.listModels()
+        val modelOptions = ListModelsOptions()
+        modelOptions.includeModelDefinition = true;
+        val listModels = client.listModels(modelOptions, Context.NONE)
         val dataToExport = mutableListOf<CsvData>()
         var modelInformationList = mutableListOf<DTDLModelInformation>()
         // Retrieve model Information
@@ -53,7 +57,7 @@ class AzureDigitalTwinsConnector : Connector<DigitalTwinsClient,List<CsvData>,Li
                 .forEach { modelData ->
                     // DTDL Model Information
                     val modelId = modelData.modelId
-                    val model = client.getModel(modelId).dtdlModel
+                    val model = modelData.dtdlModel
                     val jsonModel = Klaxon().parseJsonObject(StringReader(model))
                     // DT Information
                     val propertiesModel = HashMap(modelDefaultProperties)
