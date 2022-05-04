@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit.MILLISECONDS
 fun main() {
     val start = System.currentTimeMillis()
     try {
-        if(AzureDigitalTwinsUtil.useMultithreading()){
+        if(AzureDigitalTwinsUtil.getNumberOfThread() != 1){
             println("Run connector in MultiThread mode")
             AzureDigitalTwinsConnectorMultithread().process()
         }

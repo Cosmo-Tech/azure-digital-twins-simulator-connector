@@ -232,24 +232,14 @@ class AzureDigitalTwinsUtil {
             return configuration.getOptionalValue(CSM_FETCH_ABSOLUTE_PATH,String::class.java)
         }
 
-        /** Do we use multithreading*/
-        @JvmStatic
-        fun useMultithreading(): Boolean{
-            val multithreadingOptional = configuration.getOptionalValue(CSM_USE_MULTITHREADING,String::class.java)
-            var useMultithreading = false
-            if (multithreadingOptional?.isPresent == true) {
-                useMultithreading = multithreadingOptional.get().toBoolean()
-            }
-            return useMultithreading
-        }
-
         /** Get the number of thread to use*/
         @JvmStatic
         fun getNumberOfThread(): Int{
-            val numberOfThreadOptional = configuration.getOptionalValue(CSM_NUMBER_OF_THREAD,String::class.java)
-            var numberOfThread = 8
+            val numberOfThreadOptional = configuration.getOptionalValue(CSM_NUMBER_OF_THREAD,Int::class.java)
+            // By default, no multithreading
+            var numberOfThread = 1
             if (numberOfThreadOptional?.isPresent == true) {
-                numberOfThread = numberOfThreadOptional.get().toInt()
+                numberOfThread = numberOfThreadOptional.get()
             }
             return numberOfThread
         }
