@@ -6,6 +6,14 @@ The aim of this project is to :
 
 ## Changelog
 
+### Version 2.4.0
+
+#### New Features
+* Add multithreading for twin fetching
+
+#### Documentation:
+* Add doc for CSM_NUMBER_OF_THREAD environment variable
+
 ### Version 2.3.3
 #### Fix:
 * Warning at runtime Failed to load class "org.slf4j.impl.StaticLoggerBinder"
@@ -28,7 +36,6 @@ The aim of this project is to :
 
 #### Documentation:
 * Add doc for AZURE_ADT_TENANT_ID environment variable
-
 
 ### Version 2.3.2
 
@@ -93,6 +100,7 @@ Here is the list of properties that should be changed (in ```META-INF/microprofi
 - **azure.client.secret**
 - **azure.digital.twins.url**
 - **csm.fetch.absolute.path**
+- **csm.number.of.thread**
 
 If you want to overwrite these properties, you can write your own property values in the ```META-INF/microprofile-config.properties``` file, or set a property's system, or an environment variable named :
 - **AZURE_CLIENT_ID** : the Azure client id (can be found under the App registration screen)
@@ -101,6 +109,7 @@ If you want to overwrite these properties, you can write your own property value
 - **AZURE_ADT_TENANT_ID** : the ADT tenant id
 - **AZURE_DIGITAL_TWINS_URL** : the url of the ADT targeted (can be found in the specific resource screen)
 - **CSM_FETCH_ABSOLUTE_PATH** : the absolute path to export all csv files (don't forget the / at the end)
+- **CSM_NUMBER_OF_THREAD** : The amount of thread used to retrieve twin information from ADT (default 1)
 
 ## Log level
 Default log level defined is "info".
