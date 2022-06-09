@@ -1,0 +1,27 @@
+# NOTE: This connector makes use of the core Platform credentials to authenticate against the Azure Digital Twins API.
+# This will not work if the Platform was deployed in the customer tenant,
+# because the connector would need to use the credentials of a customer-provided app registration.
+# In this case, please register the 'Connector_car.yaml' file instead.
+key: ADT Connector
+name: ADT Connector
+description: Connector for Azure Digital Twins. Read ADT and write the data in CSV for a ScenarioRun
+repository: cosmo-tech/azure-digital-twins-simulator-connector
+version: "2.4.0"
+tags:
+  - ADT
+url: https://github.com/Cosmo-Tech/azure-digital-twins-simulator-connector
+ioTypes:
+  - read
+parameterGroups:
+  - id: parameters
+    label: Parameters
+    parameters:
+      - id: AZURE_DIGITAL_TWINS_URL
+        label: Azure Digital Twins URL
+        valueType: string
+        envVar: AZURE_DIGITAL_TWINS_URL
+      - id: CSM_NUMBER_OF_THREAD
+        label: Number of thread used
+        valueType: int
+        default: 1
+        envVar: CSM_NUMBER_OF_THREAD
