@@ -12,7 +12,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <kotlin.version>1.6.10</kotlin.version>
+    <kotlin.version>1.7.10</kotlin.version>
     <apache.commons.csv.version>1.9.0</apache.commons.csv.version>
     <com.beust.klaxon.version>5.6</com.beust.klaxon.version>
     <apache.commons-io.version>2.11.0</apache.commons-io.version>
