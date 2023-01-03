@@ -58,7 +58,7 @@ class JsonUtilTest: AbstractUnitTest() {
 
     @Test
     fun `readProperties Name And Type`() {
-        val readPropertiesNameAndType = JsonUtil.Reader.readPropertiesNameAndType(dtJsonModel)
+        val readPropertiesNameAndType = JsonUtil.readPropertiesNameAndType(dtJsonModel)
         assertEquals(
                 mapOf(
                         "TimeStepDuration" to "string",
@@ -77,13 +77,13 @@ class JsonUtilTest: AbstractUnitTest() {
 
     @Test
     fun `readExtension without extends`() {
-        assertNull(JsonUtil.Reader.readExtension(dtJsonWithoutExtendsModel),
+        assertNull(JsonUtil.readExtension(dtJsonWithoutExtendsModel),
                 "Check if the check for the 'extends' properties is correct")
     }
 
     @Test
     fun `readExtension with string type extends`() {
-        val extensionList = JsonUtil.Reader.readExtension(dtJsonWithStringExtendsModel)
+        val extensionList = JsonUtil.readExtension(dtJsonWithStringExtendsModel)
         assertFalse { extensionList is JsonArray }
         assertEquals(listOf("dtmi:com:cosmotech:supply:Operation;1"),
                 extensionList,
@@ -92,7 +92,7 @@ class JsonUtilTest: AbstractUnitTest() {
 
     @Test
     fun `readExtension with list type extends`() {
-        val extensionList = JsonUtil.Reader.readExtension(dtJsonWithListExtendsModel)
+        val extensionList = JsonUtil.readExtension(dtJsonWithListExtendsModel)
         assertTrue { extensionList is JsonArray }
         assertEquals(
                 listOf("dtmi:com:cosmotech:supply:Operation;1",

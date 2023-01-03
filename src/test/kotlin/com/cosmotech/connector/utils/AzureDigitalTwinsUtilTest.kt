@@ -11,6 +11,8 @@ import com.cosmotech.connector.AbstractUnitTest
 import com.cosmotech.connector.adt.pojos.DTDLModelInformation
 import com.cosmotech.connector.adt.utils.AzureDigitalTwinsUtil
 import com.fasterxml.jackson.databind.util.RawValue
+import org.junit.jupiter.api.DynamicTest.dynamicTest
+import org.junit.jupiter.api.TestFactory
 import java.time.OffsetDateTime
 import java.util.*
 import kotlin.test.Test
@@ -275,6 +277,32 @@ class AzureDigitalTwinsUtilTest: AbstractUnitTest() {
             assertEquals(transportOpDT.properties[key], value)
     }
 
+    @TestFactory
+    fun `given filters, when defined or not, then return twinquery with filters or not`() =
+        listOf(
+            null to "SELECT * FROM digitaltwins",
+            Optional.of("{}") to "SELECT * FROM digitaltwins",
+            Optional.of("{\"key\":\"value\"}") to "SELECT * FROM digitaltwins T WHERE T.key = 'value'",
+            Optional.of("{\"key1\":\"value1\",\"key2\":\"value2\"}") to "SELECT * FROM digitaltwins T WHERE T.key1 = 'value1' AND T.key2 = 'value2'",
+        )
+            .map{ (filter, query) ->
+                dynamicTest("given $filter filters value, twin query expected is $query") {
+                    assertEquals(query,AzureDigitalTwinsUtil.constructTwinQuery(filter))
+                }
+            }
+    @TestFactory
+    fun `given filters, when defined or not, then return relationship query with filters or not`() =
+        listOf(
+            null to "SELECT * FROM RELATIONSHIPS",
+            Optional.of("{}") to "SELECT * FROM RELATIONSHIPS",
+            Optional.of("{\"key\":\"value\"}") to "SELECT * FROM RELATIONSHIPS R WHERE R.key = 'value'",
+            Optional.of("{\"key1\":\"value1\",\"key2\":\"value2\"}") to "SELECT * FROM RELATIONSHIPS R WHERE R.key1 = 'value1' AND R.key2 = 'value2'",
+        )
+            .map{ (filter, query) ->
+                dynamicTest("given $filter filters value, twin query expected is $query") {
+                    assertEquals(query,AzureDigitalTwinsUtil.constructRelationshipQuery(filter))
+                }
+            }
 
 
     private fun constructBasicDigitalTwinForTest():BasicDigitalTwin {
