@@ -7,7 +7,6 @@ import com.azure.core.util.Context
 import com.azure.digitaltwins.core.*
 import com.azure.digitaltwins.core.models.ListModelsOptions
 import com.azure.identity.ClientSecretCredentialBuilder
-import com.azure.identity.DefaultAzureCredentialBuilder
 import com.beust.klaxon.Klaxon
 import com.cosmotech.connector.adt.constants.modelDefaultProperties
 import com.cosmotech.connector.adt.pojos.DTDLModelInformation
@@ -73,7 +72,11 @@ class AzureDigitalTwinsConnector : Connector<DigitalTwinsClient,List<CsvData>,Li
         LOGGER.info("Fetching Digital Twin Instances Information...")
         val fetchDTInstancesStart = System.nanoTime()
 
-        val digitalTwins = client.query("SELECT * FROM DIGITALTWINS", BasicDigitalTwin::class.java)
+        val filtersConfiguration = AzureDigitalTwinsUtil.getAdtSubGraphFilters()
+
+        val twinQuery = AzureDigitalTwinsUtil.constructTwinQuery(filtersConfiguration)
+        LOGGER.debug("Twin query: {} ",twinQuery)
+        val digitalTwins = client.query(twinQuery, BasicDigitalTwin::class.java)
                 .groupBy { it.metadata.modelId }
         modelInformationList.forEach {
             val digitalTwinsByModel = digitalTwins[it.id]
@@ -96,8 +99,11 @@ class AzureDigitalTwinsConnector : Connector<DigitalTwinsClient,List<CsvData>,Li
 
         LOGGER.info("Fetching Digital Twin Relationships...")
         val constructRelationshipStart = System.nanoTime()
+
+        val relQuery = AzureDigitalTwinsUtil.constructRelationshipQuery(filtersConfiguration)
+        LOGGER.debug("Relationship query: {} ",relQuery)
         AzureDigitalTwinsUtil.constructRelationshipInformation(
-                client.query("SELECT * FROM RELATIONSHIPS", BasicRelationship::class.java)
+                client.query(relQuery, BasicRelationship::class.java)
                         .groupBy { it.name },
                 dataToExport)
         val constructRelationshipTiming = System.nanoTime() - constructRelationshipStart
