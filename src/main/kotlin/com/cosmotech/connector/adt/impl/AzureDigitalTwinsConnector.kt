@@ -72,9 +72,8 @@ class AzureDigitalTwinsConnector : Connector<DigitalTwinsClient,List<CsvData>,Li
         LOGGER.info("Fetching Digital Twin Instances Information...")
         val fetchDTInstancesStart = System.nanoTime()
 
-        val filtersConfiguration = AzureDigitalTwinsUtil.getAdtSubGraphFilters()
-
-        val twinQuery = AzureDigitalTwinsUtil.constructTwinQuery(filtersConfiguration)
+        val twinsFiltersConfiguration = AzureDigitalTwinsUtil.getTwinFilters()
+        val twinQuery = AzureDigitalTwinsUtil.constructTwinQuery(twinsFiltersConfiguration)
         LOGGER.debug("Twin query: {} ",twinQuery)
         val digitalTwins = client.query(twinQuery, BasicDigitalTwin::class.java)
                 .groupBy { it.metadata.modelId }
@@ -100,7 +99,8 @@ class AzureDigitalTwinsConnector : Connector<DigitalTwinsClient,List<CsvData>,Li
         LOGGER.info("Fetching Digital Twin Relationships...")
         val constructRelationshipStart = System.nanoTime()
 
-        val relQuery = AzureDigitalTwinsUtil.constructRelationshipQuery(filtersConfiguration)
+        val relsFiltersConfiguration = AzureDigitalTwinsUtil.getRelationFilters()
+        val relQuery = AzureDigitalTwinsUtil.constructRelationshipQuery(relsFiltersConfiguration)
         LOGGER.debug("Relationship query: {} ",relQuery)
         AzureDigitalTwinsUtil.constructRelationshipInformation(
                 client.query(relQuery, BasicRelationship::class.java)
