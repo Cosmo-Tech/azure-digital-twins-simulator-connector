@@ -24,6 +24,21 @@ The aim of this project is to :
 * Add doc for __TWIN_FILTERS__ environment variable
 * Add doc for __RELATION_FILTERS__ environment variable
 
+#### Dependency updates
+
+* Bump kotlin.version from 1.6.10 to 1.7.10
+* Bump smallrye-config from 2.9.1 to 3.1.1
+* Bump azure-digitaltwins-core from 1.2.0 to 1.3.4
+* Bump azure-identity from 1.4.6 to 1.7.2
+* Replace javax.annotation-api:1.3.2 by jakarta.annotation-api:2.1.1
+* Bump log4j-api from 2.17.2 to 2.19.0
+* Bump log4j-core from 2.17.2 to 2.19.0
+* Bump jib-maven-plugin from 3.2.0 to 3.3.1
+* Bump maven-clean-plugin from 3.1.0 to 3.2.0
+* Bump maven-install-plugin from 2.5.2 to 3.1.0
+* Bump maven-deploy-plugin from 2.8.2 to 3.0.0
+
+
 ### Version 2.4.0
 
 #### New Features
