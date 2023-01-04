@@ -1,0 +1,32 @@
+# NOTE: This connector makes use of the core Platform credentials to authenticate against the Azure Digital Twins API.
+# This will not work if the Platform was deployed in the customer tenant,
+# because the connector would need to use the credentials of a customer-provided app registration.
+# In this case, please register the 'Connector_car.yaml' file instead.
+key: ADT Connector with filters
+name: ADT Connector with filters
+description: Connector for Azure Digital Twins. Read ADT and write the data filtered in CSV for a ScenarioRun
+repository: cosmo-tech/azure-digital-twins-simulator-connector
+version: "2.5.0"
+tags:
+  - ADT
+url: https://github.com/Cosmo-Tech/azure-digital-twins-simulator-connector
+ioTypes:
+  - read
+parameterGroups:
+  - id: parameters
+    label: Parameters
+    parameters:
+      - id: AZURE_DIGITAL_TWINS_URL
+        label: Azure Digital Twins URL
+        valueType: string
+        envVar: AZURE_DIGITAL_TWINS_URL
+      - id: TWIN_FILTERS
+        label: Twin filters object
+        valueType: string
+        envVar: TWIN_FILTERS
+        default: "{}"
+      - id: RELATION_FILTERS
+        label: Relationship filters object
+        valueType: string
+        envVar: RELATION_FILTERS
+        default: "{}"
