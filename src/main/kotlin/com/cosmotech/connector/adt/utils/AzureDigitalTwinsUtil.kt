@@ -233,10 +233,17 @@ object AzureDigitalTwinsUtil {
     fun getAzureClientSecret(): String {
         return configuration.getValue(AZURE_CLIENT_SECRET_KEY,String::class.java)
     }
-    /** Get the Azure Secret Id*/
+
+    /** Get the twin filters */
     @JvmStatic
-    fun getAdtSubGraphFilters(): Optional<String>? {
-        return configuration.getOptionalValue(ADT_SUB_GRAPH_FILTERS,String::class.java)
+    fun getTwinFilters(): Optional<String>? {
+        return configuration.getOptionalValue(TWIN_FILTERS,String::class.java)
+    }
+
+    /** Get the relationships filters */
+    @JvmStatic
+    fun getRelationFilters(): Optional<String>? {
+        return configuration.getOptionalValue(RELATION_FILTERS,String::class.java)
     }
 
     /**
@@ -254,6 +261,7 @@ object AzureDigitalTwinsUtil {
         }
         return query
     }
+
     /**
      * Construct relationship query with filters if specified
      */

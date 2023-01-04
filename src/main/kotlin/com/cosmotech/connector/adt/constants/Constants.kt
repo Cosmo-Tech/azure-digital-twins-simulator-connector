@@ -25,8 +25,12 @@ const val CSM_FETCH_ABSOLUTE_PATH = "csm.fetch.absolute.path"
 /** Environment variable to specify the number of thread to use */
 const val CSM_NUMBER_OF_THREAD = "csm.number.of.thread"
 
-/** Environment variable to specify adt sub graph filters to use */
-const val ADT_SUB_GRAPH_FILTERS = "adt.sub.graph.filters"
+/** Environment variable to specify twins adt sub graph filters to use */
+const val TWIN_FILTERS = "twin.filters"
+
+/** Environment variable to specify relationships adt sub graph filters to use */
+const val RELATION_FILTERS = "relation.filters"
+
 /**
  * Default header cell name for digital twins
  */

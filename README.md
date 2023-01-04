@@ -11,18 +11,18 @@ The aim of this project is to :
 #### New Features
 * Add filters for twins and relationships which enable subgraph querying of an ADT instance:
 **N.B:**
-- Filter conditional is defined regarding a JSON format: e.g. {"propertyName": "propertyValue"}
+- Filter conditional is defined regarding a JSON format: e.g. `{"propertyName": "propertyValue"}`
 - Filters are optional (ADT connector will fetch everything in ADT instance when not defined)
 - Several filters will generate queries with AND condition: 
   - e.g: 
-  - filters: {"propertyName1": "propertyValue1","propertyName2": "propertyValue2"}
+  - filters: `{"propertyName1": "propertyValue1","propertyName2": "propertyValue2"}`
   - resulting queries: 
-    - "SELECT * FROM digitaltwins T WHERE T.propertyName1 = 'propertyValue1' AND T.propertyName2 = 'propertyValue2'"
-    - "SELECT * FROM RELATIONSHIPS R WHERE R.propertyName1 = 'propertyValue1' AND R.propertyName2 = 'propertyValue2'"
+    - "`SELECT * FROM digitaltwins T WHERE T.propertyName1 = 'propertyValue1' AND T.propertyName2 = 'propertyValue2'`"
+    - "`SELECT * FROM RELATIONSHIPS R WHERE R.propertyName1 = 'propertyValue1' AND R.propertyName2 = 'propertyValue2'`"
 
 #### Documentation:
-* Add doc for ADT_SUB_GRAPH_FILTERS environment variable
-
+* Add doc for __TWIN_FILTERS__ environment variable
+* Add doc for __RELATION_FILTERS__ environment variable
 
 ### Version 2.4.0
 
@@ -119,7 +119,8 @@ Here is the list of properties that should be changed (in ```META-INF/microprofi
 - **azure.digital.twins.url**
 - **csm.fetch.absolute.path**
 - **csm.number.of.thread**
-- **adt.sub.graph.filters**
+- **twin.filters**
+- **relation.filters**
 
 If you want to overwrite these properties, you can write your own property values in the ```META-INF/microprofile-config.properties``` file, or set a property's system, or an environment variable named :
 - **AZURE_CLIENT_ID** : the Azure client id (can be found under the App registration screen)
@@ -129,7 +130,8 @@ If you want to overwrite these properties, you can write your own property value
 - **AZURE_DIGITAL_TWINS_URL** : the url of the ADT targeted (can be found in the specific resource screen)
 - **CSM_FETCH_ABSOLUTE_PATH** : the absolute path to export all csv files (don't forget the / at the end)
 - **CSM_NUMBER_OF_THREAD** : The amount of thread used to retrieve twin information from ADT (default 1)
-- **ADT_SUB_GRAPH_FILTERS** : Filters you want to apply on your ADT instance to query a sub graph (default blank) (example: {"propertyName","propertyValue"})
+- **TWIN_FILTERS** : Filters you want to apply to twins in your ADT instance to query a sub graph (default blank) (example: {"propertyName","propertyValue"})
+- **RELATION_FILTERS** : Filters you want to apply to relationships in your ADT instance to query a sub graph (default blank) (example: {"propertyName","propertyValue"})
 
 ## Log level
 Default log level defined is "info".
