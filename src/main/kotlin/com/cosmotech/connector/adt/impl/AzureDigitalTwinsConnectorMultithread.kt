@@ -73,13 +73,14 @@ class AzureDigitalTwinsConnectorMultithread : Connector<DigitalTwinsClient,List<
         val fetchDTInstancesStart = System.nanoTime()
 
         val completableFutureList : MutableList<CompletableFuture<CsvData?>> = mutableListOf()
-
+        val twinFilters = AzureDigitalTwinsUtil.getTwinFilters()
         for(model in modelInformationList){
             completableFutureList.add(CompletableFuture.supplyAsync(
                 ManageDigitalTwins(
                     model.id,
                     modelInformationList,
-                    client
+                    client,
+                    twinFilters
                 ), executor
             ))
         }
@@ -97,8 +98,11 @@ class AzureDigitalTwinsConnectorMultithread : Connector<DigitalTwinsClient,List<
 
         LOGGER.info("Fetching Digital Twin Relationships...")
         val fetchRelationshipInstancesStart = System.nanoTime()
+
+        val relsFiltersConfiguration = AzureDigitalTwinsUtil.getRelationFilters()
+        val relQuery = AzureDigitalTwinsUtil.constructRelationshipQuery(relsFiltersConfiguration)
         AzureDigitalTwinsUtil.constructRelationshipInformation(
-            client.query("SELECT * FROM RELATIONSHIPS", BasicRelationship::class.java)
+            client.query(relQuery, BasicRelationship::class.java)
                 .groupBy { it.name },
             csvDataList as MutableList<CsvData>
         )

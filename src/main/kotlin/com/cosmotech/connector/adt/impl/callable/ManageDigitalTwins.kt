@@ -7,12 +7,15 @@ import com.cosmotech.connector.adt.utils.AzureDigitalTwinsUtil
 import com.cosmotech.connector.commons.pojo.CsvData
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
 
 class ManageDigitalTwins(private val modelId: String,
                          private val modelInformationList : MutableList<DTDLModelInformation>,
-                         private val client: DigitalTwinsClient) : Supplier<CsvData?> {
+                         private val client: DigitalTwinsClient,
+                         private val filters: Optional<String>?
+    ) : Supplier<CsvData?> {
 
     companion object {
         val LOGGER: Logger = LogManager.getLogger(ManageDigitalTwins::class.java.name)
@@ -23,8 +26,15 @@ class ManageDigitalTwins(private val modelId: String,
 
         LOGGER.info("Fetching Digital Twin Instances Information for $modelId ...")
         val fetchDTInstanceStart = System.nanoTime()
+        var queryString = StringBuilder("SELECT * FROM DIGITALTWINS WHERE IS_OF_MODEL('")
+            .append("$modelId')").toString()
 
-        val queryString = StringBuilder("SELECT * FROM DIGITALTWINS WHERE IS_OF_MODEL('").append(modelId).append("')").toString()
+        if (filters != null && filters.isPresent) {
+            val twinQuery = AzureDigitalTwinsUtil.constructTwinQuery(filters)
+            queryString = StringBuilder("$twinQuery AND IS_OF_MODEL('")
+                .append("$modelId')").toString()
+        }
+
         val digitalTwinsTyped = client.query(queryString, BasicDigitalTwin::class.java).toList()
         val dataToExport : MutableList<CsvData> = mutableListOf()
 
